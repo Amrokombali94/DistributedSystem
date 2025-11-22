@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package shipping;
+
+service ShippingService {
+  rpc CreateShipping(ShippingRequest) returns (ShippingResponse);
+  rpc GetShipping(ShippingDetailsRequest) returns (ShippingResponse);
+  rpc UpdateShippingStatus(UpdateShippingStatusRequest) returns (ShippingResponse);
+}
+
+message ShippingRequest {
+  string order_id = 1;
+  string user_id = 2;
+  string shipping_address = 3;
+  string shipping_method = 4;
+}
+
+message ShippingDetailsRequest {
+  string shipping_id = 1;
+}
+
+message UpdateShippingStatusRequest {
+  string shipping_id = 1;
+  string status = 2;
+  string tracking_number = 3;
+}
+
+message ShippingResponse {
+  string shipping_id = 1;
+  string order_id = 2;
+  string user_id = 3;
+  string shipping_address = 4;
+  string shipping_method = 5;
+  string status = 6;
+  string tracking_number = 7;
+  string estimated_delivery = 8;
+  string message = 9;
+}

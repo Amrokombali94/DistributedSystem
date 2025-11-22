@@ -27,17 +27,17 @@ import shipping_pb2_grpc
 
 class ECommerceClient:
     def __init__(self):
-        self.user_channel = grpc.insecure_channel('user_service:50051')
-        self.product_channel = grpc.insecure_channel('product_service:50052')
-        self.order_channel = grpc.insecure_channel('order_service:50053')
-        self.payment_channel = grpc.insecure_channel('payment_service:50054')
-        self.shipping_channel = grpc.insecure_channel('shipping_service:50055')
+        # self.user_channel = grpc.insecure_channel('user_service:50051')
+        # self.product_channel = grpc.insecure_channel('product_service:50052')
+        # self.order_channel = grpc.insecure_channel('order_service:50053')
+        # self.payment_channel = grpc.insecure_channel('payment_service:50054')
+        # self.shipping_channel = grpc.insecure_channel('shipping_service:50055')
 
-	#self.user_channel = grpc.insecure_channel('localhost:50051')
-        #self.product_channel = grpc.insecure_channel('localhost:50052')
-	#self.order_channel = grpc.insecure_channel('localhost:50053')
-	#self.payment_channel = grpc.insecure_channel('localhost:50054')
-	#self.shipping_channel = grpc.insecure_channel('localhost:50055')
+        self.user_channel = grpc.insecure_channel('localhost:50051')
+        self.product_channel = grpc.insecure_channel('localhost:50052')
+        self.order_channel = grpc.insecure_channel('localhost:50053')
+        self.payment_channel = grpc.insecure_channel('localhost:50054')
+        self.shipping_channel = grpc.insecure_channel('localhost:50055')
 
         
         self.user_stub = user_pb2_grpc.UserServiceStub(self.user_channel)
@@ -131,20 +131,20 @@ class ECommerceClient:
                 product_request = product_pb2.ProductRequest(product_id=product_id)
                 product_response = self.product_stub.GetProduct(product_request)
                 
-                if product_response.status == "success":
-                    quantity = int(input(f"Enter quantity for {product_response.name}: "))
-                    
-                    if quantity > 0 and quantity <= product_response.stock:
-                        items.append(order_pb2.OrderItem(
-                            product_id=product_id,
-                            quantity=quantity,
-                            price=product_response.price
-                        ))
-                        print(f"✅ Added {quantity} x {product_response.name} to cart")
-                    else:
-                        print("❌ Invalid quantity")
-                else:
-                    print("❌ Product not found")
+                # if product_response.status == "success":
+                quantity = int(input(f"Enter quantity for {product_response.name}: "))
+                
+                # if quantity > 0 and quantity <= product_response.stock:
+                items.append(order_pb2.OrderItem(
+                    product_id=product_id,
+                    quantity=quantity,
+                    price=product_response.price
+                ))
+                print(f"✅ Added {quantity} x {product_response.name} to cart")
+                    # else:
+                    #     print("❌ Invalid quantity")
+                # else:
+                #     print("❌ Product not found")
             except grpc.RpcError as e:
                 print(f"❌ gRPC Error: {e.details()}")
         
@@ -168,45 +168,45 @@ class ECommerceClient:
             if order_response.order_id:
                 print(f"✅ Order created successfully! Order ID: {order_response.order_id}")
                 
-                # Process payment
-                payment_request = payment_pb2.PaymentRequest(
-                    order_id=order_response.order_id,
-                    user_id=self.current_user.user_id,
-                    amount=order_response.total_amount,
-                    payment_method=payment_method,
-                    card_number="4111111111111111",  # Mock card number
-                    expiry_date="12/25",
-                    cvv="123"
-                )
-                payment_response = self.payment_stub.ProcessPayment(payment_request)
+                # # Process payment
+                # payment_request = payment_pb2.PaymentRequest(
+                #     order_id=order_response.order_id,
+                #     user_id=self.current_user.user_id,
+                #     amount=order_response.total_amount,
+                #     payment_method=payment_method,
+                #     card_number="4111111111111111",  # Mock card number
+                #     expiry_date="12/25",
+                #     cvv="123"
+                # )
+                # payment_response = self.payment_stub.ProcessPayment(payment_request)
                 
-                if payment_response.status == "completed":
-                    print(f"✅ Payment processed successfully! Transaction ID: {payment_response.transaction_id}")
+                # if payment_response.status == "completed":
+                #     print(f"✅ Payment processed successfully! Transaction ID: {payment_response.transaction_id}")
                     
-                    # Create shipping
-                    shipping_request = shipping_pb2.ShippingRequest(
-                        order_id=order_response.order_id,
-                        user_id=self.current_user.user_id,
-                        shipping_address=shipping_address,
-                        shipping_method="standard"
-                    )
-                    shipping_response = self.shipping_stub.CreateShipping(shipping_request)
+                #     # Create shipping
+                #     shipping_request = shipping_pb2.ShippingRequest(
+                #         order_id=order_response.order_id,
+                #         user_id=self.current_user.user_id,
+                #         shipping_address=shipping_address,
+                #         shipping_method="standard"
+                #     )
+                #     shipping_response = self.shipping_stub.CreateShipping(shipping_request)
                     
-                    if shipping_response.shipping_id:
-                        print(f"✅ Shipping created successfully! Tracking Number: {shipping_response.tracking_number}")
+                #     if shipping_response.shipping_id:
+                #         print(f"✅ Shipping created successfully! Tracking Number: {shipping_response.tracking_number}")
                         
-                        # Update order status
-                        update_request = order_pb2.UpdateOrderStatusRequest(
-                            order_id=order_response.order_id,
-                            status="confirmed",
-                            admin_id="admin"
-                        )
-                        self.order_stub.UpdateOrderStatus(update_request)
-                        print("✅ Order status updated to 'confirmed'")
-                    else:
-                        print("❌ Failed to create shipping")
-                else:
-                    print(f"❌ Payment failed: {payment_response.message}")
+                #         # Update order status
+                #         update_request = order_pb2.UpdateOrderStatusRequest(
+                #             order_id=order_response.order_id,
+                #             status="confirmed",
+                #             admin_id="admin"
+                #         )
+                #         self.order_stub.UpdateOrderStatus(update_request)
+                #         print("✅ Order status updated to 'confirmed'")
+                #     else:
+                #         print("❌ Failed to create shipping")
+                # else:
+                #     print(f"❌ Payment failed: {payment_response.message}")
             else:
                 print("❌ Failed to create order")
         except grpc.RpcError as e:

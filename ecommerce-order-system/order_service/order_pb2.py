@@ -6,9 +6,7 @@
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
-from google.protobuf import runtime_version  as _runtime_version
-
-
+from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
 _runtime_version.ValidateProtobufRuntimeVersion(
@@ -23,8 +21,10 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 
 _sym_db = _symbol_database.Default()
 
-
-import product_pb2 as product__pb2
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import product_service.product_pb2 as product__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0border.proto\x12\x05order\x1a\rproduct.proto\"@\n\tOrderItem\x12\x12\n\nproduct_id\x18\x01 \x01(\t\x12\x10\n\x08quantity\x18\x02 \x01(\x05\x12\r\n\x05price\x18\x03 \x01(\x01\"x\n\x12\x43reateOrderRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x1f\n\x05items\x18\x02 \x03(\x0b\x32\x10.order.OrderItem\x12\x18\n\x10shipping_address\x18\x03 \x01(\t\x12\x16\n\x0epayment_method\x18\x04 \x01(\t\" \n\x0cOrderRequest\x12\x10\n\x08order_id\x18\x01 \x01(\t\"A\n\x11UserOrdersRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0c\n\x04page\x18\x02 \x01(\x05\x12\r\n\x05limit\x18\x03 \x01(\x05\"N\n\x18UpdateOrderStatusRequest\x12\x10\n\x08order_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x10\n\x08\x61\x64min_id\x18\x03 \x01(\t\"7\n\x12\x43\x61ncelOrderRequest\x12\x10\n\x08order_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"\xe4\x01\n\rOrderResponse\x12\x10\n\x08order_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x1f\n\x05items\x18\x03 \x03(\x0b\x32\x10.order.OrderItem\x12\x14\n\x0ctotal_amount\x18\x04 \x01(\x01\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x18\n\x10shipping_address\x18\x06 \x01(\t\x12\x16\n\x0epayment_method\x18\x07 \x01(\t\x12\x12\n\ncreated_at\x18\x08 \x01(\t\x12\x12\n\nupdated_at\x18\t \x01(\t\x12\x0f\n\x07message\x18\n \x01(\t\"f\n\x12UserOrdersResponse\x12$\n\x06orders\x18\x01 \x03(\x0b\x32\x14.order.OrderResponse\x12\r\n\x05total\x18\x02 \x01(\x05\x12\x0c\n\x04page\x18\x03 \x01(\x05\x12\r\n\x05limit\x18\x04 \x01(\x05\x32\xd7\x02\n\x0cOrderService\x12>\n\x0b\x43reateOrder\x12\x19.order.CreateOrderRequest\x1a\x14.order.OrderResponse\x12\x35\n\x08GetOrder\x12\x13.order.OrderRequest\x1a\x14.order.OrderResponse\x12\x44\n\rGetUserOrders\x12\x18.order.UserOrdersRequest\x1a\x19.order.UserOrdersResponse\x12J\n\x11UpdateOrderStatus\x12\x1f.order.UpdateOrderStatusRequest\x1a\x14.order.OrderResponse\x12>\n\x0b\x43\x61ncelOrder\x12\x19.order.CancelOrderRequest\x1a\x14.order.OrderResponseb\x06proto3')
