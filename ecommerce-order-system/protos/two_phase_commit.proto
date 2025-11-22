@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package two_phase_commit;
+
+// ----- Decision enum -----
+enum Decision {
+  DECISION_UNKNOWN = 0;
+  GLOBAL_COMMIT    = 1;
+  GLOBAL_ABORT     = 2;
+}
+
+// ----- Messages -----
+
+// Voting phase: from coordinator -> participants
+message VoteRequest {
+  string transaction_id = 1;   // UUID for the transaction
+  string operation      = 2;   // e.g., "CREATE_ORDER"
+  string order_id       = 3;   // may be empty for new order
+}
+
+// Voting phase: from participants -> coordinator
+message VoteResponse {
+  string transaction_id = 1;
+  bool   vote_commit    = 2;   // true = vote COMMIT, false = vote ABORT
+  string reason         = 3;   // explanation
+}
+
+// Decision phase: from coordinator -> participants
+message DecisionRequest {
+  string transaction_id = 1;
+  Decision decision     = 2;   // GLOBAL_COMMIT or GLOBAL_ABORT
+  string reason         = 3;   // explanation (e.g., "all voted commit")
+}
+
+// Decision phase: from participants -> coordinator
+message DecisionResponse {
+  string transaction_id = 1;
+  bool   success        = 2;   // true if commit/abort applied locally
+  string message        = 3;   // explanation
+}
+
+// ----- 2PC service implemented by each participant -----
+service TwoPhaseParticipant {
+  // Phase 1: voting
+  rpc Vote   (VoteRequest)     returns (VoteResponse);
+
+  // Phase 2: final decision
+  rpc Decide (DecisionRequest) returns (DecisionResponse);
+}
