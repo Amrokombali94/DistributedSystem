@@ -1,9 +1,0 @@
-# .dockerignore (place at repo root)
-.git
-build/
-clients/
-*.o
-*.obj
-.vscode/
-.DS_Store
-__pycache__/

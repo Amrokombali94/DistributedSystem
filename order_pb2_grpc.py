@@ -4,9 +4,8 @@ import grpc
 import warnings
 import sys
 import os
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-# from . import order_pb2 as order__pb2
-import order_pb2 as order__pb2
+
+import order_service.order_pb2 as order__pb2
 
 GRPC_GENERATED_VERSION = '1.74.0'
 GRPC_VERSION = grpc.__version__
