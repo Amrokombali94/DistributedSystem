@@ -11,25 +11,34 @@ import order_pb2
 import order_pb2_grpc
 
 # 2PC shared
-import two_phase_commit_service.two_phase_commit_pb2 as tpc_pb2
-import two_phase_commit_service.two_phase_commit_pb2_grpc as tpc_pb2_grpc
+# import two_phase_commit_service.two_phase_commit_pb2 as tpc_pb2
+# import two_phase_commit_service.two_phase_commit_pb2_grpc as tpc_pb2_grpc
 
+import two_phase_commit_pb2 as tpc_pb2
+import two_phase_commit_pb2_grpc as tpc_pb2_grpc
+
+import order_pb2
+import order_pb2_grpc
 # ============================================================
 # Create stubs for participants
 # ============================================================
 def make_participant_stubs():
     return {
         "user": tpc_pb2_grpc.TwoPhaseParticipantStub(
-            grpc.insecure_channel("localhost:50051")
+            # grpc.insecure_channel("localhost:50051")
+            grpc.insecure_channel("user_service:50051")
         ),
         "product": tpc_pb2_grpc.TwoPhaseParticipantStub(
-            grpc.insecure_channel("localhost:50052")
+            # grpc.insecure_channel("localhost:50052")
+            grpc.insecure_channel("product_service:50052")
         ),
         "payment": tpc_pb2_grpc.TwoPhaseParticipantStub(
-            grpc.insecure_channel("localhost:50054")
+            # grpc.insecure_channel("localhost:50054")
+            grpc.insecure_channel("payment_service:50054")
         ),
         "shipping": tpc_pb2_grpc.TwoPhaseParticipantStub(
-            grpc.insecure_channel("localhost:50055")
+            # grpc.insecure_channel("localhost:50055")
+            grpc.insecure_channel("shipping_service:50055")
         ),
     }
 
@@ -44,7 +53,7 @@ def run_two_phase_commit(order_id):
     participants = make_participant_stubs()
     votes = {}
     all_commit = True
-
+    res = []
     # ---------- PHASE 1: VOTE ----------
     for name, stub in participants.items():
         try:
@@ -56,8 +65,9 @@ def run_two_phase_commit(order_id):
                 )
             )
             votes[name] = vote
-            print(f"[VOTE][{name}] commit={vote.vote_commit}, reason={vote.reason}")
-
+            msg = f"[VOTE][{name}] commit={vote.vote_commit}, reason={vote.reason}"
+            print(msg)
+            res.append(msg)
             if not vote.vote_commit:
                 all_commit = False
 
@@ -70,11 +80,11 @@ def run_two_phase_commit(order_id):
     if all_commit:
         decision = tpc_pb2.GLOBAL_COMMIT
         decision_text = "GLOBAL_COMMIT"
-        reason = "All services voted COMMIT"
+        reason = f"All services voted COMMIT"
     else:
         decision = tpc_pb2.GLOBAL_ABORT
         decision_text = "GLOBAL_ABORT"
-        reason = "At least one service ABORTED"
+        reason = f"At least one service ABORTED"
 
     print(f"[OrderCoordinator] Decision => {decision_text}")
 
@@ -91,8 +101,9 @@ def run_two_phase_commit(order_id):
             print(f"[DECIDE][{name}] success={resp.success}, msg={resp.message}")
         except grpc.RpcError as e:
             print(f"[DECIDE][{name}] ERROR sending decision: {e}")
-
-    return decision, decision_text
+    res.append(f"[OrderCoordinator] Decision => {decision_text}")
+    data = '\n'.join(res)
+    return decision, decision_text, data
 
 class OrderService(order_pb2_grpc.OrderServiceServicer):
     def __init__(self):
@@ -124,7 +135,7 @@ class OrderService(order_pb2_grpc.OrderServiceServicer):
             self.orders[order_id] = new_order
             
             # --- Run 2PC after order created ---
-            decision, decision_text = run_two_phase_commit(order_id)
+            decision, decision_text, data = run_two_phase_commit(order_id)
 
             # with self.lock:
             if decision == tpc_pb2.GLOBAL_COMMIT:
@@ -146,7 +157,7 @@ class OrderService(order_pb2_grpc.OrderServiceServicer):
                 payment_method=request.payment_method,
                 created_at=self.orders[order_id]["created_at"],
                 updated_at=self.orders[order_id]["updated_at"],
-                message=f"{msg} ({decision_text})"
+                message=f"{msg} ({decision_text}): {data}"
             )
     
     def GetOrder(self, request, context):

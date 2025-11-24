@@ -23,14 +23,20 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 # 2PC shared proto
-from two_phase_commit_service import two_phase_commit_pb2 as two_phase_commit_pb2
-from two_phase_commit_service import two_phase_commit_pb2_grpc as two_phase_commit_pb2_grpc
+# from two_phase_commit_service import two_phase_commit_pb2 as two_phase_commit_pb2
+# from two_phase_commit_service import two_phase_commit_pb2_grpc as two_phase_commit_pb2_grpc
+# 2PC shared proto (local files in this folder)
+# import two_phase_commit_pb2 as two_phase_commit_pb2
+# import two_phase_commit_pb2_grpc as two_phase_commit_pb2_grpc
+import two_phase_commit_pb2
+import two_phase_commit_pb2_grpc
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 # Order service proto (needed for User2PC)
-from order_service import order_pb2 as order_pb2
-from order_service import order_pb2_grpc as order_pb2_grpc
-
+# from order_service import order_pb2 as order_pb2
+# from order_service import order_pb2_grpc as order_pb2_grpc
+import order_pb2
+import order_pb2_grpc
 
 class UserService(user_pb2_grpc.UserServiceServicer):
     def __init__(self):
@@ -302,7 +308,8 @@ def serve():
     # Register 2PC participant.
     # Change order_service_address to your actual host:port or Docker service name.
     two_phase_commit_pb2_grpc.add_TwoPhaseParticipantServicer_to_server(
-        User2PC(user_service, order_service_address="localhost:50053"),
+        # User2PC(user_service, order_service_address="localhost:50053"),
+        User2PC(user_service, order_service_address="order_service:50053"),
         server,
     )
 

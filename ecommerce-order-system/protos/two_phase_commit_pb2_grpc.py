@@ -3,7 +3,8 @@
 import grpc
 import warnings
 
-import two_phase_commit_pb2 as two__phase__commit__pb2
+# import two_phase_commit_pb2 as two__phase__commit__pb2 
+from . import two_phase_commit_pb2 as two__phase__commit__pb2 
 
 GRPC_GENERATED_VERSION = '1.74.0'
 GRPC_VERSION = grpc.__version__

@@ -9,16 +9,21 @@ import shipping_pb2
 import shipping_pb2_grpc
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# 2PC shared proto
-import two_phase_commit_service.two_phase_commit_pb2 as two_phase_commit_pb2
-import two_phase_commit_service.two_phase_commit_pb2_grpc as two_phase_commit_pb2_grpc
+# # 2PC shared proto
+# import two_phase_commit_service.two_phase_commit_pb2 as two_phase_commit_pb2
+# import two_phase_commit_service.two_phase_commit_pb2_grpc as two_phase_commit_pb2_grpc
 
-# Order service proto (to fetch order info: user_id, shipping_address, etc.)
-import order_service.order_pb2 as order_pb2
-import order_service.order_pb2_grpc as order_pb2_grpc
+# # Order service proto (to fetch order info: user_id, shipping_address, etc.)
+# import order_service.order_pb2 as order_pb2
+# import order_service.order_pb2_grpc as order_pb2_grpc
 
+import two_phase_commit_pb2
+import two_phase_commit_pb2_grpc
+
+import order_pb2
+import order_pb2_grpc
 
 class ShippingService(shipping_pb2_grpc.ShippingServiceServicer):
     def __init__(self):
@@ -244,7 +249,8 @@ def serve():
     # Register 2PC participant.
     # Change order_service_address to your actual host:port or Docker service name.
     two_phase_commit_pb2_grpc.add_TwoPhaseParticipantServicer_to_server(
-        Shipping2PC(shipping_service, order_service_address="localhost:50053"),
+        # Shipping2PC(shipping_service, order_service_address="localhost:50053"),
+        Shipping2PC(shipping_service, order_service_address="order_service:50053"),
         server,
     )
 

@@ -11,6 +11,7 @@ sys.path.append('../product_service')
 sys.path.append('../order_service')
 sys.path.append('../payment_service')
 sys.path.append('../shipping_service')
+sys.path.append("../two_phase_commit_service")
 
 #>>>>>>> b8d41ee (Servers and client up and running)
 
@@ -27,17 +28,17 @@ import shipping_pb2_grpc
 
 class ECommerceClient:
     def __init__(self):
-        # self.user_channel = grpc.insecure_channel('user_service:50051')
-        # self.product_channel = grpc.insecure_channel('product_service:50052')
-        # self.order_channel = grpc.insecure_channel('order_service:50053')
-        # self.payment_channel = grpc.insecure_channel('payment_service:50054')
-        # self.shipping_channel = grpc.insecure_channel('shipping_service:50055')
+        self.user_channel = grpc.insecure_channel('user_service:50051')
+        self.product_channel = grpc.insecure_channel('product_service:50052')
+        self.order_channel = grpc.insecure_channel('order_service:50053')
+        self.payment_channel = grpc.insecure_channel('payment_service:50054')
+        self.shipping_channel = grpc.insecure_channel('shipping_service:50055')
 
-        self.user_channel = grpc.insecure_channel('localhost:50051')
-        self.product_channel = grpc.insecure_channel('localhost:50052')
-        self.order_channel = grpc.insecure_channel('localhost:50053')
-        self.payment_channel = grpc.insecure_channel('localhost:50054')
-        self.shipping_channel = grpc.insecure_channel('localhost:50055')
+        # self.user_channel = grpc.insecure_channel('localhost:50051')
+        # self.product_channel = grpc.insecure_channel('localhost:50052')
+        # self.order_channel = grpc.insecure_channel('localhost:50053')
+        # self.payment_channel = grpc.insecure_channel('localhost:50054')
+        # self.shipping_channel = grpc.insecure_channel('localhost:50055')
 
         
         self.user_stub = user_pb2_grpc.UserServiceStub(self.user_channel)
@@ -167,7 +168,7 @@ class ECommerceClient:
             
             if order_response.order_id:
                 print(f"✅ Order created successfully! Order ID: {order_response.order_id}")
-                
+                print(order_response.message)
                 # # Process payment
                 # payment_request = payment_pb2.PaymentRequest(
                 #     order_id=order_response.order_id,
